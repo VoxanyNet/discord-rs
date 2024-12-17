@@ -295,7 +295,7 @@ serial_numbers! { ChannelType;
 }
 
 /// A channel category.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct ChannelCategory {
 	pub name: String,
 	pub parent_id: Option<ChannelId>,
@@ -331,7 +331,7 @@ impl ServerInfo {
 }
 
 /// Static information about a server
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Server {
 	pub id: ServerId,
 	pub name: String,
@@ -372,7 +372,7 @@ pub struct ServerPrune {
 serial_decode!(ServerPrune);
 
 /// Information about a role
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Role {
 	pub id: RoleId,
 	pub name: String,
@@ -404,7 +404,7 @@ pub struct Ban {
 serial_decode!(Ban);
 
 /// Broadly-applicable user information
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct User {
 	pub id: UserId,
 	#[serde(rename = "username")]
@@ -435,7 +435,7 @@ impl User {
 }
 
 /// Information about a member of a server
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Member {
 	pub user: User,
 	pub roles: Vec<RoleId>,
@@ -458,7 +458,7 @@ impl Member {
 }
 
 /// A private or public channel
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub enum Channel {
 	/// A group channel separate from a server
 	Group(Group),
@@ -494,7 +494,7 @@ impl Channel {
 }
 
 /// A group channel, potentially including other users, separate from a server.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Group {
 	#[serde(rename = "id")]
 	pub channel_id: ChannelId,
@@ -507,9 +507,9 @@ pub struct Group {
 	pub recipients: Vec<User>,
 
 	// ignore the "type" field
-	#[serde(rename = "type")]
-	#[serde(skip_serializing)]
-	_type: ::serde::de::IgnoredAny,
+	// #[serde(rename = "type")]
+	// #[serde(skip_serializing)]
+	// _type: ::serde::de::IgnoredAny,
 }
 serial_decode!(Group);
 
@@ -546,7 +546,7 @@ impl Group {
 }
 
 /// An active group or private call
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Call {
 	pub channel_id: ChannelId,
 	pub message_id: MessageId,
@@ -559,7 +559,7 @@ serial_decode!(Call);
 
 /// Private text channel to another user
 /// https://discord.com/developers/docs/resources/channel#channel-object
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct PrivateChannel {
 	pub id: ChannelId,
 	pub kind: ChannelType,
@@ -600,7 +600,7 @@ impl PrivateChannel {
 }
 
 /// Public voice or text channel within a server
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct PublicChannel {
 	pub id: ChannelId,
 	pub name: String,
@@ -659,14 +659,14 @@ impl PublicChannel {
 }
 
 /// The type of edit being made to a Channel's permissions.
-#[derive(Copy, Clone, Eq, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Serialize, Deserialize, Hash)]
 pub enum PermissionOverwriteType {
 	Member(UserId),
 	Role(RoleId),
 }
 
 /// A channel-specific permission overwrite for a role or member.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Hash)]
 pub struct PermissionOverwrite {
 	pub kind: PermissionOverwriteType,
 	pub allow: Permissions,
@@ -800,7 +800,7 @@ pub mod permissions {
 }
 
 /// File upload attached to a message
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Attachment {
 	pub id: String,
 	/// Short filename for the attachment
@@ -845,7 +845,7 @@ bitflags! {
 serial_single_field!(MessageFlags as bits: u64);
 
 /// Message transmitted over a text channel
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Message {
 	pub id: MessageId,
 	pub channel_id: ChannelId,
@@ -1081,7 +1081,7 @@ bitflags! {
 }
 
 /// Summary of messages since last login
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct ReadState {
 	/// Id of the relevant channel
 	pub id: ChannelId,
@@ -1135,7 +1135,7 @@ serial_numbers! { GameType;
 /// Information about a game being played
 /// https://discord.com/developers/docs/topics/gateway#activity-object
 /// (might merge it with `Activity` in the future)
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct Game {
 	pub name: String,
 	pub url: Option<String>,
@@ -1183,7 +1183,7 @@ impl Game {
 }
 
 /// A members's online status
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct Presence {
 	pub user_id: UserId,
 	pub status: OnlineStatus,
@@ -1232,7 +1232,7 @@ impl Presence {
 }
 
 /// A member's state within a voice channel
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct VoiceState {
 	pub user_id: UserId,
 	pub channel_id: Option<ChannelId>,
@@ -1271,7 +1271,7 @@ serial_numbers! { VerificationLevel;
 }
 
 /// A parter custom emoji
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Emoji {
 	pub id: EmojiId,
 	pub name: String,
@@ -1283,7 +1283,7 @@ pub struct Emoji {
 serial_decode!(Emoji);
 
 /// A full single reaction
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Reaction {
 	pub channel_id: ChannelId,
 	pub message_id: MessageId,
@@ -1293,7 +1293,7 @@ pub struct Reaction {
 serial_decode!(Reaction);
 
 /// Information on a reaction as available at a glance on a message.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct MessageReaction {
 	pub count: u64,
 	pub me: bool,
@@ -1302,7 +1302,7 @@ pub struct MessageReaction {
 serial_decode!(MessageReaction);
 
 /// Emoji information sent only from reaction events
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Hash)]
 pub enum ReactionEmoji {
 	Unicode(String),
 	Custom { name: String, id: EmojiId },
@@ -1311,7 +1311,7 @@ serial_use_mapping!(ReactionEmoji, reaction_emoji);
 serial_decode!(ReactionEmoji);
 
 /// Live server information
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct LiveServer {
 	pub id: ServerId,
 	pub name: String,
@@ -1500,7 +1500,7 @@ impl LiveServer {
 }
 
 /// A server which may be unavailable
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub enum PossibleServer<T> {
 	/// An offline server, the ID of which is known
 	Offline(ServerId),
@@ -1557,7 +1557,7 @@ impl PossibleServer<Server> {
 }
 
 /// Information about the logged-in user
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct CurrentUser {
 	pub id: UserId,
 	pub username: String,
@@ -1572,7 +1572,7 @@ pub struct CurrentUser {
 }
 serial_decode!(CurrentUser);
 
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct CurrentUserPatch {
 	pub id: Option<UserId>,
 	pub username: Option<String>,
@@ -1739,7 +1739,7 @@ serial_numbers! { RelationshipType;
 }
 
 /// Information on a friendship relationship this user has with another.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Relationship {
 	pub id: UserId,
 	#[serde(rename = "type")]
@@ -1749,7 +1749,7 @@ pub struct Relationship {
 serial_decode!(Relationship);
 
 /// Flags for who may add this user as a friend.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct FriendSourceFlags {
 	#[serde(default)]
 	pub all: bool,
@@ -1762,7 +1762,7 @@ pub struct FriendSourceFlags {
 serial_decode!(FriendSourceFlags);
 
 /// User settings usually used to influence client behavior
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct UserSettings {
 	pub detect_platform_accounts: bool,
 	pub developer_mode: bool,
@@ -1848,7 +1848,7 @@ serial_numbers! { NotificationLevel;
 }
 
 /// A channel-specific notification settings override
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct ChannelOverride {
 	pub channel_id: ChannelId,
 	pub message_notifications: NotificationLevel,
@@ -1857,7 +1857,7 @@ pub struct ChannelOverride {
 serial_decode!(ChannelOverride);
 
 /// User settings which influence per-server notification behavior
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct UserServerSettings {
 	#[serde(rename = "guild_id")]
 	pub server_id: Option<ServerId>,
@@ -1870,7 +1870,7 @@ pub struct UserServerSettings {
 serial_decode!(UserServerSettings);
 
 /// Progress through the Discord tutorial
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct Tutorial {
 	pub indicators_suppressed: bool,
 	pub indicators_confirmed: Vec<String>,
@@ -1928,7 +1928,7 @@ pub struct IncidentUpdate {
 serial_decode!(IncidentUpdate);
 
 /// The "Ready" event, containing initial state
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct ReadyEvent {
 	pub version: u64,
 	pub user: CurrentUser,
@@ -1951,7 +1951,7 @@ pub struct ReadyEvent {
 
 /// the emoji used for a custom status
 /// https://discord.com/developers/docs/topics/gateway#activity-object-activity-emoji
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash)]
 pub struct ActivityEmoji {
 	pub name: String,
 	pub id: Option<EmojiId>,
@@ -1961,7 +1961,7 @@ serial_decode!(ActivityEmoji);
 
 /// User's activity
 /// https://discord.com/developers/docs/topics/gateway#activity-object
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Hash)]
 pub struct Activity {
 	/// 0 - Game, 1 - Streaming, 2 - Listening, 4 - Custom
 	/// https://discord.com/developers/docs/topics/gateway#activity-object-activity-types
@@ -1981,7 +1981,7 @@ pub struct Activity {
 serial_decode!(Activity);
 
 /// Event received over a websocket connection
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub enum Event {
 	/// The first event in a connection, containing the initial state.
 	///
